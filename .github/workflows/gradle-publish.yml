@@ -42,23 +42,15 @@ jobs:
         USERNAME: ${{ github.actor }}
         TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v2
+    - name: Create GitHub Release and Upload Artifacts
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        name: Release ${{ github.ref }}
+        body: "This release includes the latest build artifacts."
         draft: false
         prerelease: false
-
-    - name: Upload Artifacts to Release
-      uses: actions/upload-release-asset@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ github.workspace }}/build/libs/*.jar
-        asset_name: my-package.jar
-        asset_content_type: application/java-archive
+        files: |
+          ${{ github.workspace }}/build/libs/*.jar
