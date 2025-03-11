@@ -7,10 +7,11 @@
 
 name: Gradle Package
 
+# Trigger the workflow only when a tag is pushed
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*" # Only trigger for tags matching this pattern (e.g., v1.0.0, v2.3.4)
 
 jobs:
   build:
@@ -47,10 +48,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        name: Release ${{ github.ref }}
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
         body: "This release includes the latest build artifacts."
-        draft: false
-        prerelease: false
         files: |
           ${{ github.workspace }}/build/libs/*.jar
